@@ -1,0 +1,123 @@
+unit FrmProduto;
+
+interface
+
+uses
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  ProdutoDAO,
+  Produto;
+
+type
+  TFrmProduto = class(TForm)
+    lblNome: TLabel;
+    lblPreco: TLabel;
+    lblQuantidade: TLabel;
+
+    edtNome: TEdit;
+    edtPreco: TEdit;
+    edtQuantidade: TEdit;
+
+    btnCadastrar: TButton;
+
+    lstProdutos: TListBox;
+
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure btnCadastrarClick(Sender: TObject);
+
+  private
+    FProdutosDAO: TProdutosDAO;
+
+    procedure AtualizarLista;
+    procedure CadastrarProduto;
+
+  public
+
+  end;
+
+var
+  FrmProdutoTela: TFrmProduto;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TFrmProduto.FormCreate(Sender: TObject);
+begin
+  FProdutosDAO := TProdutosDAO.Create;
+end;
+
+
+procedure TFrmProduto.FormDestroy(Sender: TObject);
+begin
+  FProdutosDAO.Free;
+end;
+
+
+procedure TFrmProduto.btnCadastrarClick(Sender: TObject);
+begin
+  CadastrarProduto;
+end;
+
+
+procedure TFrmProduto.CadastrarProduto;
+var
+  NovoProduto: TProduto;
+
+begin
+
+  NovoProduto := TProduto.Create;
+
+  NovoProduto.Nome := edtNome.Text;
+  NovoProduto.Preco := StrToFloat(edtPreco.Text);
+  NovoProduto.Quantidade := StrToInt(edtQuantidade.Text);
+  NovoProduto.Ativo := True;
+
+
+  FProdutosDAO.Adicionar(NovoProduto);
+
+
+  AtualizarLista;
+
+
+  ShowMessage('Produto cadastrado com sucesso!');
+
+end;
+
+
+procedure TFrmProduto.AtualizarLista;
+var
+  Item: TProduto;
+
+begin
+
+  lstProdutos.Clear;
+
+
+  for Item in FProdutosDAO.Listar do
+  begin
+    lstProdutos.Items.Add(
+      IntToStr(Item.Id) +
+      ' - ' +
+      Item.Nome +
+      ' | R$ ' +
+      FloatToStr(Item.Preco) +
+      ' | Qtd: ' +
+      IntToStr(Item.Quantidade)
+    );
+  end;
+
+end;
+
+
+end.
