@@ -1,0 +1,53 @@
+# =========================
+# Delphi - arquivos temporários
+# =========================
+
+# Histórico e recuperação da IDE
+__history/
+__recovery/
+
+# Arquivos compilados
+*.dcu
+*.dcp
+*.bpl
+*.exe
+
+# Arquivos temporários da IDE
+*.local
+*.identcache
+*.stat
+*.dsk
+*.tvsconfig
+
+# Arquivos de debug
+*.map
+*.rsm
+*.tds
+
+# Backups
+*.bak
+*.tmp
+*.~*
+
+# =========================
+# Pastas de compilação
+# =========================
+
+Win32/
+Win64/
+
+Debug/
+Release/
+
+# =========================
+# IDEs
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# Logs
+# =========================
+
+*.log
