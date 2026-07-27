@@ -126,6 +126,11 @@
         <DCCReference Include="Forms\FrmProduto.pas"/>
         <DCCReference Include="Models\Produto.pas"/>
         <DCCReference Include="DAO\ProdutoDAO.pas"/>
+        <DCCReference Include="Data\dmConexao.pas">
+            <Form>DataModule1</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

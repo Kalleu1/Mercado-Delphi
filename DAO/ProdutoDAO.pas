@@ -3,91 +3,85 @@ unit ProdutoDAO;
 interface
 
 uses
-  System.Generics.Collections,
-  Produto;
+  System.SysUtils,
+  FireDAC.Comp.Client,
+  Produto,
+  dmConexao;
 
 type
   TProdutosDAO = class
-  private
-    FProdutos: TObjectList<TProduto>;
-
   public
-    constructor Create;
-    destructor Destroy; override;
-
     procedure Adicionar(AProduto: TProduto);
-    procedure Remover(AId: Integer);
     procedure Atualizar(AProduto: TProduto);
-
-    function Listar: TObjectList<TProduto>;
+    procedure Remover(AId: Integer);
+    function Listar: TFDQuery;
   end;
 
+ implementation
 
-implementation
-
-
-constructor TProdutosDAO.Create;
-begin
-  FProdutos := TObjectList<TProduto>.Create(True);
-end;
-
-
-destructor TProdutosDAO.Destroy;
-begin
-  FProdutos.Free;
-  inherited;
-end;
-
-
-procedure TProdutosDAO.Adicionar(AProduto: TProduto);
-begin
-  AProduto.Id := FProdutos.Count + 1;
-  FProdutos.Add(AProduto);
-end;
-
-
-procedure TProdutosDAO.Remover(AId: Integer);
-var
-  I: Integer;
-
-begin
-
-  for I := FProdutos.Count - 1 downto 0 do
+ procedure TProdutosDAO.Adicionar(AProduto: TProduto);
   begin
-    if FProdutos[I].Id = AId then
-    begin
-      FProdutos.Delete(I);
-      Exit;
-    end;
+    DataModule1.FDQuery1.Close;
+    DataModule1.FDQuery1.SQL.Clear;
+
+    DataModule1.FDQuery1.SQL.Add(
+      'INSERT INTO PRODUTOS (NOME, PRECO, QUANTIDADE, ATIVO) ' +
+      'VALUES (:NOME, :PRECO, :QUANTIDADE, :ATIVO)');
+
+    DataModule1.FDQuery1.ParamByName('NOME').AsString := AProduto.Nome;
+    DataModule1.FDQuery1.ParamByName('PRECO').AsFloat := AProduto.Preco;
+    DataModule1.FDQuery1.ParamByName('QUANTIDADE').AsInteger := AProduto.Quantidade;
+    DataModule1.FDQuery1.ParamByName('ATIVO').AsInteger := Ord(AProduto.Ativo);
+
+    DataModule1.FDQuery1.ExecSQL;
   end;
 
-end;
-
-
-procedure TProdutosDAO.Atualizar(AProduto: TProduto);
-var
-  Produto: TProduto;
-begin
-
-  for Produto in FProdutos do
+ procedure TProdutosDAO.Atualizar(AProduto: TProduto);
   begin
-    if Produto.Id = AProduto.Id then
-    begin
-      Produto.Nome := AProduto.Nome;
-      Produto.Preco := AProduto.Preco;
-      Produto.Quantidade := AProduto.Quantidade;
-      Produto.Ativo := AProduto.Ativo;
-      Break;
-    end;
+    DataModule1.FDQuery1.Close;
+    DataModule1.FDQuery1.SQL.Clear;
+
+    DataModule1.FDQuery1.SQL.Add(
+      'UPDATE PRODUTOS ' +
+      'SET NOME = :NOME, ' +
+      'PRECO = :PRECO, ' +
+      'QUANTIDADE = :QUANTIDADE, ' +
+      'ATIVO = :ATIVO ' +
+      'WHERE ID = :ID');
+
+    DataModule1.FDQuery1.ParamByName('ID').AsInteger := AProduto.Id;
+    DataModule1.FDQuery1.ParamByName('NOME').AsString := AProduto.Nome;
+    DataModule1.FDQuery1.ParamByName('PRECO').AsFloat := AProduto.Preco;
+    DataModule1.FDQuery1.ParamByName('QUANTIDADE').AsInteger := AProduto.Quantidade;
+    DataModule1.FDQuery1.ParamByName('ATIVO').AsInteger := Ord(AProduto.Ativo);
+
+    DataModule1.FDQuery1.ExecSQL;
   end;
 
-end;
+ procedure TProdutosDAO.Remover(AId: Integer);
+  begin
+    DataModule1.FDQuery1.Close;
+    DataModule1.FDQuery1.SQL.Clear;
 
+    DataModule1.FDQuery1.SQL.Add(
+      'DELETE FROM PRODUTOS WHERE ID = :ID');
 
-function TProdutosDAO.Listar: TObjectList<TProduto>;
-begin
-  Result := FProdutos;
-end;
+    DataModule1.FDQuery1.ParamByName('ID').AsInteger := AId;
 
+    DataModule1.FDQuery1.ExecSQL;
+  end;
+
+ function TProdutosDAO.Listar: TFDQuery;
+  begin
+    DataModule1.FDQuery1.Close;
+    DataModule1.FDQuery1.SQL.Clear;
+
+    DataModule1.FDQuery1.SQL.Add(
+      'SELECT * FROM PRODUTOS ORDER BY ID');
+
+    DataModule1.FDQuery1.Open;
+
+    Result := DataModule1.FDQuery1;
+  end;
 
 end.
