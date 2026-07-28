@@ -64,22 +64,13 @@ object FrmProduto: TFrmProduto
     TabOrder = 3
     OnClick = btnCadastrarClick
   end
-  object lstProdutos: TListBox
-    Left = 32
-    Top = 168
-    Width = 553
-    Height = 257
-    ItemHeight = 15
-    TabOrder = 4
-    OnClick = lstProdutosClick
-  end
   object btnEditar: TButton
     Left = 146
     Top = 124
     Width = 75
     Height = 25
     Caption = 'Editar'
-    TabOrder = 5
+    TabOrder = 4
     OnClick = btnEditarClick
   end
   object btnExcluir: TButton
@@ -88,7 +79,21 @@ object FrmProduto: TFrmProduto
     Width = 75
     Height = 25
     Caption = 'Excluir'
-    TabOrder = 6
+    TabOrder = 5
     OnClick = btnExcluirClick
+  end
+  object dbgProdutos: TDBGrid
+    Left = 32
+    Top = 184
+    Width = 553
+    Height = 185
+    DataSource = DataModule1.DataSource1
+    TabOrder = 6
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -12
+    TitleFont.Name = 'Segoe UI'
+    TitleFont.Style = []
+    OnCellClick = dbgProdutosCellClick
   end
 end

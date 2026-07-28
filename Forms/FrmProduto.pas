@@ -14,8 +14,9 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   FireDAC.Comp.Client,
+  dmConexao,
   ProdutoDAO,
-  Produto;
+  Produto, Data.DB, Vcl.Grids, Vcl.DBGrids;
 
 type
   TFrmProduto = class(TForm)
@@ -23,12 +24,12 @@ type
     edtPreco: TEdit;
     edtQuantidade: TEdit;
     btnCadastrar: TButton;
-    lstProdutos: TListBox;
     lblNome: TLabel;
     lblPreco: TLabel;
     lblQuantidade: TLabel;
     btnEditar: TButton;
     btnExcluir: TButton;
+    dbgProdutos: TDBGrid;
 
 
     procedure FormCreate(Sender: TObject);
@@ -36,7 +37,7 @@ type
     procedure btnCadastrarClick(Sender: TObject);
     procedure btnEditarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
-    procedure lstProdutosClick(Sender: TObject);
+    procedure dbgProdutosCellClick(Column: TColumn);
 
   private
     FProdutosDAO: TProdutosDAO;
@@ -138,139 +139,103 @@ begin
 
 end;
 
+  procedure TFrmProduto.dbgProdutosCellClick(Column: TColumn);
+    begin
+      FProdutoSelecionado :=
+        DataModule1.FDQuery1.FieldByName('ID').AsInteger;
+
+      edtNome.Text :=
+        DataModule1.FDQuery1.FieldByName('NOME').AsString;
+
+      edtPreco.Text :=
+        DataModule1.FDQuery1.FieldByName('PRECO').AsString;
+
+      edtQuantidade.Text :=
+        DataModule1.FDQuery1.FieldByName('QUANTIDADE').AsString;
+    end;
+
   procedure TFrmProduto.AtualizarLista;
+    begin
+      FProdutosDAO.Listar;
+    end;
+
+
+  procedure TFrmProduto.btnEditarClick(Sender: TObject);
   var
-    Query: TFDQuery;
+      Produto: TProduto;
+      Preco: Double;
+      Quantidade: Integer;
   begin
-    lstProdutos.Clear;
+      if FProdutoSelecionado = -1 then
+      begin
+        ShowMessage('Selecione um produto.');
+        Exit;
+      end;
 
-    Query := FProdutosDAO.Listar;
+      if not TryStrToFloat(edtPreco.Text, Preco) then
+      begin
+        ShowMessage('Preço inválido.');
+        Exit;
+      end;
 
-    Query.First;
+      if not TryStrToInt(edtQuantidade.Text, Quantidade) then
+      begin
+        ShowMessage('Quantidade inválida.');
+        Exit;
+      end;
 
-    while not Query.Eof do
+      Produto := TProduto.Create;
+      try
+        Produto.Id := FProdutoSelecionado;
+        Produto.Nome := edtNome.Text;
+        Produto.Preco := Preco;
+        Produto.Quantidade := Quantidade;
+        Produto.Ativo := True;
+
+        FProdutosDAO.Atualizar(Produto);
+
+        AtualizarLista;
+        LimparCampos;
+
+        ShowMessage('Produto atualizado com sucesso!');
+
+      finally
+        Produto.Free;
+      end;
+  end;
+
+
+  procedure TFrmProduto.btnExcluirClick(Sender: TObject);
     begin
-      lstProdutos.Items.AddObject(
-        Query.FieldByName('ID').AsString +
-        ' - ' +
-        Query.FieldByName('NOME').AsString +
-        ' | R$ ' +
-        FormatFloat('0.00', Query.FieldByName('PRECO').AsFloat) +
-        ' | Qtd: ' +
-        Query.FieldByName('QUANTIDADE').AsString,
+      if FProdutoSelecionado = -1 then
+      begin
+        ShowMessage('Selecione um produto.');
+        Exit;
+      end;
 
-        TObject(NativeInt(Query.FieldByName('ID').AsInteger))
-      );
+      if MessageDlg(
+        'Deseja realmente excluir este produto?',
+        mtConfirmation,
+        [mbYes, mbNo],
+        0) = mrYes then
+      begin
+        FProdutosDAO.Remover(FProdutoSelecionado);
 
-      Query.Next;
-    end;
-  end;
+        AtualizarLista;
+        LimparCampos;
 
-procedure TFrmProduto.lstProdutosClick(Sender: TObject);
-var
-  Query: TFDQuery;
-begin
-  if lstProdutos.ItemIndex = -1 then
-    Exit;
-
-  FProdutoSelecionado :=
-    NativeInt(lstProdutos.Items.Objects[lstProdutos.ItemIndex]);
-
-  Query := FProdutosDAO.Listar;
-
-  Query.First;
-
-  while not Query.Eof do
-  begin
-    if Query.FieldByName('ID').AsInteger = FProdutoSelecionado then
-    begin
-      edtNome.Text := Query.FieldByName('NOME').AsString;
-      edtPreco.Text := Query.FieldByName('PRECO').AsString;
-      edtQuantidade.Text := Query.FieldByName('QUANTIDADE').AsString;
-      Exit;
+        ShowMessage('Produto removido com sucesso!');
+      end;
     end;
 
-    Query.Next;
-  end;
-end;
-
-procedure TFrmProduto.btnEditarClick(Sender: TObject);
-var
-  Produto: TProduto;
-  Preco: Double;
-  Quantidade: Integer;
-begin
-  if FProdutoSelecionado = -1 then
+  procedure TFrmProduto.LimparCampos;
   begin
-    ShowMessage('Selecione um produto.');
-    Exit;
+    edtNome.Clear;
+    edtPreco.Clear;
+    edtQuantidade.Clear;
+
+    FProdutoSelecionado := -1;
+
   end;
-
-  if not TryStrToFloat(edtPreco.Text, Preco) then
-  begin
-    ShowMessage('Preço inválido.');
-    Exit;
-  end;
-
-  if not TryStrToInt(edtQuantidade.Text, Quantidade) then
-  begin
-    ShowMessage('Quantidade inválida.');
-    Exit;
-  end;
-
-  Produto := TProduto.Create;
-  try
-    Produto.Id := FProdutoSelecionado;
-    Produto.Nome := edtNome.Text;
-    Produto.Preco := Preco;
-    Produto.Quantidade := Quantidade;
-    Produto.Ativo := True;
-
-    FProdutosDAO.Atualizar(Produto);
-
-  finally
-    Produto.Free;
-  end;
-
-  AtualizarLista;
-  LimparCampos;
-
-  ShowMessage('Produto atualizado!');
-end;
-
-
-procedure TFrmProduto.btnExcluirClick(Sender: TObject);
-begin
-  if FProdutoSelecionado = -1 then
-  begin
-    ShowMessage('Selecione um produto.');
-    Exit;
-  end;
-
-  if MessageDlg(
-      'Deseja realmente excluir este produto?',
-      mtConfirmation,
-      [mbYes, mbNo],
-      0) = mrYes then
-  begin
-    FProdutosDAO.Remover(FProdutoSelecionado);
-
-    AtualizarLista;
-    LimparCampos;
-
-    ShowMessage('Produto removido!');
-  end;
-end;
-
-procedure TFrmProduto.LimparCampos;
-begin
-  edtNome.Clear;
-  edtPreco.Clear;
-  edtQuantidade.Clear;
-
-  FProdutoSelecionado := -1;
-
-  lstProdutos.ItemIndex := -1;
-end;
 
 end.
