@@ -44,47 +44,47 @@ object FrmProduto: TFrmProduto
   object edtPreco: TEdit
     Left = 32
     Top = 87
-    Width = 53
+    Width = 121
     Height = 23
     TabOrder = 1
   end
   object edtQuantidade: TEdit
     Left = 32
     Top = 137
-    Width = 53
+    Width = 121
     Height = 23
     TabOrder = 2
   end
   object btnCadastrar: TButton
-    Left = 224
-    Top = 36
-    Width = 75
-    Height = 25
+    Left = 32
+    Top = 173
+    Width = 89
+    Height = 37
     Caption = 'Cadastrar'
     TabOrder = 3
     OnClick = btnCadastrarClick
   end
   object btnEditar: TButton
-    Left = 224
-    Top = 135
-    Width = 75
-    Height = 25
+    Left = 280
+    Top = 173
+    Width = 81
+    Height = 37
     Caption = 'Editar'
     TabOrder = 4
     OnClick = btnEditarClick
   end
   object btnExcluir: TButton
-    Left = 224
-    Top = 86
-    Width = 75
-    Height = 25
+    Left = 160
+    Top = 173
+    Width = 89
+    Height = 37
     Caption = 'Excluir'
     TabOrder = 5
     OnClick = btnExcluirClick
   end
   object dbgProdutos: TDBGrid
     Left = 32
-    Top = 192
+    Top = 248
     Width = 553
     Height = 185
     DataSource = DataModule1.DataSource1
@@ -96,5 +96,21 @@ object FrmProduto: TFrmProduto
     TitleFont.Name = 'Segoe UI'
     TitleFont.Style = []
     OnCellClick = dbgProdutosCellClick
+  end
+  object edtPesquisa: TEdit
+    Left = 32
+    Top = 219
+    Width = 473
+    Height = 23
+    TabOrder = 7
+  end
+  object btnPesquisar: TButton
+    Left = 520
+    Top = 217
+    Width = 65
+    Height = 25
+    Caption = 'Pesquisar'
+    TabOrder = 8
+    OnClick = btnPesquisarClick
   end
 end

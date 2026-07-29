@@ -17,6 +17,7 @@ type
     procedure Remover(AId: Integer);
 
     function Listar: TFDQuery;
+    function Pesquisar(Nome: string): TFDQuery;
 
   end;
 
@@ -163,6 +164,27 @@ begin
   DataModule1.FDQuery1.Open;
 
   Result := DataModule1.FDQuery1;
+end;
+
+function TProdutosDAO.Pesquisar(Nome: string): TFDQuery;
+begin
+
+  DataModule1.FDQuery1.Close;
+
+  DataModule1.FDQuery1.SQL.Text :=
+    'SELECT * ' +
+    'FROM PRODUTOS ' +
+    'WHERE NOME LIKE :NOME ' +
+    'ORDER BY ID';
+
+  DataModule1.FDQuery1.ParamByName('NOME').AsString :=
+    '%' + Nome + '%';
+
+  DataModule1.FDQuery1.Open;
+
+
+  Result := DataModule1.FDQuery1;
+
 end;
 
 

@@ -30,6 +30,8 @@ type
     btnEditar: TButton;
     btnExcluir: TButton;
     dbgProdutos: TDBGrid;
+    edtPesquisa: TEdit;
+    btnPesquisar: TButton;
 
 
     procedure FormCreate(Sender: TObject);
@@ -38,6 +40,7 @@ type
     procedure btnEditarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
     procedure dbgProdutosCellClick(Column: TColumn);
+    procedure btnPesquisarClick(Sender: TObject);
 
   private
     FProdutosDAO: TProdutosDAO;
@@ -46,6 +49,7 @@ type
     procedure AtualizarLista;
     procedure CadastrarProduto;
     procedure LimparCampos;
+    procedure PesquisarProduto;
 
 
   public
@@ -228,7 +232,11 @@ end;
       end;
     end;
 
-  procedure TFrmProduto.LimparCampos;
+
+
+
+
+procedure TFrmProduto.LimparCampos;
   begin
     edtNome.Clear;
     edtPreco.Clear;
@@ -236,6 +244,18 @@ end;
 
     FProdutoSelecionado := -1;
 
+  end;
+
+procedure TFrmProduto.PesquisarProduto;
+    begin
+
+    FProdutosDAO.Pesquisar(edtPesquisa.Text);
+
+    end;
+
+procedure TFrmProduto.btnPesquisarClick(Sender: TObject);
+  begin
+    PesquisarProduto;
   end;
 
 end.
