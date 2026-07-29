@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Phys.FB, FireDAC.Phys.FBDef, Vcl.Dialogs,
   FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.DataSet;
+  FireDAC.Comp.DataSet, System.IOUtils;
 
 type
   TDataModule1 = class(TDataModule)
@@ -35,15 +35,17 @@ procedure TDataModule1.DataModuleCreate(Sender: TObject);
 begin
   try
     FDConnection1.Params.Database :=
-      'D:\Minha Pasta(Kalleu)\Kalleu\Codigos\Delphi\Mercado Delphi\Banco\Produtos.fdb';
+      TPath.GetFullPath(
+        TPath.Combine(
+          ExtractFilePath(ParamStr(0)),
+          '..\..\Banco\Produtos.fdb'
+        )
+      );
 
     FDConnection1.Connected := True;
 
     FDQuery1.SQL.Text := 'SELECT * FROM PRODUTOS';
     FDQuery1.Open;
-
-    ShowMessage('Quantidade de registros: ' +
-      IntToStr(FDQuery1.RecordCount));
 
   except
     on E: Exception do
